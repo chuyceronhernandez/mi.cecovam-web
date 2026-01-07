@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Registro - CECOVAM</title>
+    <style>
+        body { font-family: sans-serif; text-align: center; padding: 20px; background-color: #f4f4f4; }
+        form { background: white; padding: 20px; border-radius: 8px; display: inline-block; box-shadow: 0 0 10px rgba(0,0,0,0.1); }
+        input { display: block; width: 250px; margin: 10px auto; padding: 10px; border: 1px solid #ccc; border-radius: 4px; }
+        button { background-color: #1a2a6c; color: white; padding: 10px 20px; border: none; border-radius: 4px; cursor: pointer; }
+        button:hover { background-color: #b21f1f; }
+    </style>
+</head>
+<body>
+
+    <h2>Registro de Alumnos CECOVAM</h2>
+    <form id="registroForm">
+        <input type="text" id="nombre" placeholder="Nombre completo" required>
+        <input type="email" id="correo" placeholder="Correo electrónico" required>
+        <input type="password" id="pass" placeholder="Contraseña (mínimo 6 caracteres)" required>
+        <button type="submit">Registrarme</button>
+    </form>
+
+    <script type="module">
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-app.js";
+        import { getAuth, createUserWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-auth.js";
+        import { getFirestore, doc, setDoc } from "https://www.gstatic.com/firebasejs/11.1.0/firebase-firestore.js";
+
+        // Tu configuración de Firebase (se mantiene igual)
+        const firebaseConfig = {
+            authDomain: "plataforma-cecovam.firebaseapp.com",
+            projectId: "plataforma-cecovam",
+            storageBucket: "plataforma-cecovam.firebasestorage.app",
+            messagingSenderId: "655865798428",
+            appId: "1:655865798428:web:71e967a5b39918233f2834"
+        };
