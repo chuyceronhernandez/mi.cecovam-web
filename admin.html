@@ -3,75 +3,139 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrativo - CECOVAM</title>
+    <title>Panel Administrativo Maestro - CECOVAM</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
-        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; display: flex; }
-        .sidebar { width: 250px; background: #1a2a6c; color: white; min-height: 100vh; padding: 20px; }
-        .main-content { flex: 1; padding: 30px; }
-        .header-admin { background: white; padding: 20px; border-radius: 10px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 25px; }
-        .grid-admin { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 20px; }
-        .card-admin { background: white; padding: 20px; border-radius: 10px; text-align: center; border-top: 4px solid #b21f1f; box-shadow: 0 4px 6px rgba(0,0,0,0.05); cursor: pointer; transition: 0.3s; }
-        .card-admin:hover { transform: translateY(-5px); box-shadow: 0 6px 12px rgba(0,0,0,0.1); }
-        .card-admin h3 { color: #1a2a6c; font-size: 16px; margin: 10px 0; }
-        .sidebar h2 { border-bottom: 1px solid #ffffff33; padding-bottom: 10px; font-size: 20px; }
-        .menu-item { padding: 12px; cursor: pointer; border-radius: 5px; margin-bottom: 5px; }
-        .menu-item:hover { background: #ffffff22; }
+        :root { --azul: #1a2a6c; --rojo: #b21f1f; --gris: #f4f7f6; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--gris); margin: 0; display: flex; }
+        
+        /* Sidebar */
+        .sidebar { width: 260px; background: var(--azul); color: white; min-height: 100vh; position: fixed; padding: 20px; }
+        .sidebar h2 { text-align: center; border-bottom: 2px solid var(--rojo); padding-bottom: 15px; }
+        .menu-btn { width: 100%; padding: 12px; margin: 10px 0; border: none; background: transparent; color: white; text-align: left; cursor: pointer; border-radius: 5px; font-size: 16px; }
+        .menu-btn:hover { background: rgba(255,255,255,0.1); border-left: 4px solid var(--rojo); }
+
+        /* Contenido Principal */
+        .main { margin-left: 300px; padding: 30px; flex: 1; }
+        .section { display: none; background: white; padding: 25px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
+        .active { display: block; }
+        
+        /* Tablas y Estilo de Datos */
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #ddd; text-align: left; }
+        th { background: var(--azul); color: white; }
+        .card-data { border-left: 5px solid var(--rojo); background: #f9f9f9; padding: 15px; margin-bottom: 15px; border-radius: 5px; }
+        
+        /* Formulario Pagos */
+        .form-group { margin-bottom: 15px; }
+        input, select { width: 100%; padding: 10px; margin-top: 5px; border-radius: 5px; border: 1px solid #ccc; }
+        .btn-save { background: var(--rojo); color: white; border: none; padding: 10px 20px; border-radius: 5px; cursor: pointer; }
     </style>
 </head>
 <body>
 
 <div class="sidebar">
-    <h2>CECOVAM Admin</h2>
-    <div class="menu-item" onclick="location.href='index.html'">🏠 Inicio Público</div>
-    <div class="menu-item" onclick="alert('Abriendo avisos...')">📢 Subir Avisos</div>
-    <div class="menu-item" onclick="location.href='https://console.firebase.google.com/'">🔥 Base de Datos</div>
+    <h2>ADMIN CECOVAM</h2>
+    <button class="menu-btn" onclick="showSection('sec-planeaciones')">📑 Ver Planeaciones</button>
+    <button class="menu-btn" onclick="showSection('sec-asistencias')">✅ Ver Asistencias</button>
+    <button class="menu-btn" onclick="showSection('sec-pagos')">💰 Control de Pagos</button>
+    <button class="menu-btn" onclick="showSection('sec-avisos')">📣 Publicar Avisos</button>
     <hr>
-    <div class="menu-item" style="color: #ff4d4d;" onclick="location.href='index.html'">Cerrar Sesión</div>
+    <button class="menu-btn" onclick="location.href='index.html'" style="color: #ff9f9f;">🏠 Cerrar Sesión</button>
 </div>
 
-<div class="main-content">
-    <div class="header-admin">
-        <h1>Panel de Control Administrativo</h1>
-        <p>Gestión integral de la institución</p>
+<div class="main">
+    <div id="sec-planeaciones" class="section active">
+        <h1>Planeaciones de Docentes</h1>
+        <div id="lista-planeaciones">Cargando datos...</div>
     </div>
 
-    <div class="grid-admin">
-        <div class="card-admin" onclick="alert('Cargando planeaciones guardadas en Firebase...')">
-            <h3>📑 Checar Planeaciones</h3>
-            <p><small>Ver avances de maestros</small></p>
-        </div>
+    <div id="sec-asistencias" class="section">
+        <h1>Asistencias de Alumnos</h1>
+        <div id="lista-asistencias">Cargando datos...</div>
+    </div>
 
-        <div class="card-admin" onclick="alert('Cargando lista de tareas publicadas...')">
-            <h3>📝 Verificar Tareas</h3>
-            <p><small>Control de materias</small></p>
+    <div id="sec-pagos" class="section">
+        <h1>Control de Pagos y Mensualidades</h1>
+        <div class="form-group">
+            <input type="text" id="pagoAlumno" placeholder="Nombre del Alumno">
+            <input type="number" id="pagoMonto" placeholder="Monto $">
+            <select id="pagoMes">
+                <option value="Enero">Enero</option><option value="Febrero">Febrero</option>
+                <option value="Marzo">Marzo</option><option value="Abril">Abril</option>
+            </select>
+            <button class="btn-save" onclick="registrarPago()">Registrar Pago</button>
         </div>
+        <table id="tabla-pagos">
+            <thead><tr><th>Alumno</th><th>Mes</th><th>Monto</th><th>Fecha</th></tr></thead>
+            <tbody id="body-pagos"></tbody>
+        </table>
+    </div>
 
-        <div class="card-admin" onclick="alert('Módulo de asistencia docente en desarrollo')">
-            <h3>⏰ Asistencia Docente</h3>
-            <p><small>Entradas y salidas</small></p>
-        </div>
-
-        <div class="card-admin" onclick="alert('Módulo de pagos próximamente')">
-            <h3>💰 Control de Pagos</h3>
-            <p><small>Colegiaturas e inscripciones</small></p>
-        </div>
-
-        <div class="card-admin" onclick="alert('Área de recursos escolares')">
-            <h3>📂 Recursos</h3>
-            <p><small>Inventario y material</small></p>
-        </div>
-
-        <div class="card-admin" onclick="alert('Gestión de archivos institucionales')">
-            <h3>📁 Archivos</h3>
-            <p><small>Documentación oficial</small></p>
-        </div>
-
-        <div class="card-admin" onclick="alert('Módulo de avisos escolares')">
-            <h3>📣 Avisos Escolares</h3>
-            <p><small>Publicar noticias</small></p>
-        </div>
+    <div id="sec-avisos" class="section">
+        <h1>Publicar Avisos Escolares</h1>
+        <textarea id="textoAviso" rows="5" style="width:100%;" placeholder="Escribe el aviso para los alumnos..."></textarea>
+        <button class="btn-save" style="margin-top:10px" onclick="publicarAviso()">Publicar a la comunidad</button>
     </div>
 </div>
 
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDJh57e-sBDK0_8VtFn4EwFOyDDsm8v0lc",
+        authDomain: "plataforma-cecovam.firebaseapp.com",
+        projectId: "plataforma-cecovam",
+        storageBucket: "plataforma-cecovam.firebasestorage.app",
+        messagingSenderId: "655865798428",
+        appId: "1:655865798428:web:625f020d553385e43d24d9"
+    };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    function showSection(id) {
+        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+        document.getElementById(id).classList.add('active');
+    }
+
+    // CARGAR PLANEACIONES
+    db.collection("planeaciones").orderBy("fechaRegistro", "desc").onSnapshot(snap => {
+        const div = document.getElementById("lista-planeaciones");
+        div.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            div.innerHTML += <div class="card-data"><strong>Docente:</strong> ${d.docente}<br><strong>Semana:</strong> ${d.semana}<br><p>${d.contenido}</p></div>;
+        });
+    });
+
+    // CARGAR ASISTENCIAS
+    db.collection("asistencias").orderBy("fecha", "desc").onSnapshot(snap => {
+        const div = document.getElementById("lista-asistencias");
+        div.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            div.innerHTML += <div class="card-data"><strong>Fecha:</strong> ${d.fecha}<br><strong>Alumnos Presentes:</strong> ${d.alumnos.join(", ")}</div>;
+        });
+    });
+
+    // REGISTRAR PAGOS
+    async function registrarPago() {
+        const alumno = document.getElementById("pagoAlumno").value;
+        const monto = document.getElementById("pagoMonto").value;
+        const mes = document.getElementById("pagoMes").value;
+        if(!alumno || !monto) return alert("Completa los datos");
+        await db.collection("pagos").add({ alumno, monto, mes, fecha: new Date().toLocaleDateString() });
+        alert("Pago registrado");
+    }
+
+    // CARGAR PAGOS
+    db.collection("pagos").onSnapshot(snap => {
+        const tbody = document.getElementById("body-pagos");
+        tbody.innerHTML = "";
+        snap.forEach(doc => {
+            const d = doc.data();
+            tbody.innerHTML += <tr><td>${d.alumno}</td><td>${d.mes}</td><td>$${d.monto}</td><td>${d.fecha}</td></tr>;
+        });
+    });
+</script>
 </body>
 </html>
