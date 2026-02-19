@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Planeaciones Académicas - CECOVAM</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; max-width: 600px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #1a2a6c; text-align: center; border-bottom: 3px solid #b21f1f; padding-bottom: 10px; }
+        label { font-weight: bold; color: #333; }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0 20px 0; border: 1px solid #ccc; border-radius: 6px; box-sizing: border-box; }
+        .btn-enviar { background: #b21f1f; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; font-weight: bold; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Subir Planeación Semanal</h2>
+    
+    <label>Docente:</label>
+    <input type="text" id="nombreDocente" placeholder="Tu nombre completo">
+
+    <label>Semana del:</label>
+    <input type="date" id="fechaSemana">
+
+    <label>Contenido de la Planeación:</label>
+    <textarea id="contenidoPlaneacion" rows="8" placeholder="Escribe aquí los objetivos, actividades y temas de la semana..."></textarea>
+
+    <button class="btn-enviar" onclick="guardarPlaneacion()">GUARDAR PLANEACIÓN</button>
+    <p style="text-align: center;"><a href="docentes.html" style="color: #1a2a6c; text-decoration: none;">← Volver al Panel</a></p>
+</div>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyDJh57e-sBDK0_8VtFn4EwFOyDDsm8v0lc",
+        authDomain: "plataforma-cecovam.firebaseapp.com",
+        projectId: "plataforma-cecovam",
+        storageBucket: "plataforma-cecovam.firebasestorage.app",
+        messagingSenderId: "655865798428",
+        appId: "1:655865798428:web:625f020d553385e43d24d9"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    async function guardarPlaneacion() {
+        const docente = document.getElementById('nombreDocente').value;
+        const fecha = document.getElementById('fechaSemana').value;
+        const contenido = document.getElementById('contenidoPlaneacion').value;
+
+        if(!docente || !fecha || !contenido) return alert("Por favor, completa todos los campos");
+
+        try {
+            await db.collection("planeaciones").add({
+                docente: docente,
+                semana: fecha,
+                contenido: contenido,
+                fechaRegistro: new Date().toLocaleString()
+            });
+            alert("¡Planeación guardada con éxito en el sistema!");
+            location.reload(); 
+        } catch (e) {
+            alert("Error al guardar la planeación");
+        }
+    }
+</script>
+</body>
+</html>
