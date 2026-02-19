@@ -3,21 +3,42 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Docentes - CECOVAM</title>
+    <title>Panel de Docentes - CECOVAM</title>
     <style>
-        body { font-family: 'Segoe UI', Arial, sans-serif; background-color: #f0f2f5; margin: 0; padding: 20px; text-align: center; }
-        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.1); }
-        h1 { color: #1a2a6c; }
-        .btn-volver { display: inline-block; margin-top: 20px; padding: 10px 20px; background-color: #b21f1f; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; }
+        body { font-family: 'Segoe UI', sans-serif; background-color: #f4f7f6; margin: 0; padding: 20px; text-align: center; }
+        .header { background-color: #1a2a6c; color: white; padding: 20px; border-radius: 10px; margin-bottom: 30px; }
+        .container { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
+        .card-work { background: white; border-left: 5px solid #b21f1f; padding: 20px; width: 250px; border-radius: 8px; box-shadow: 0 4px 8px rgba(0,0,0,0.1); cursor: pointer; transition: 0.3s; }
+        .card-work:hover { transform: translateY(-5px); background-color: #f9f9f9; }
+        .card-work h3 { color: #1a2a6c; margin-top: 0; }
+        .btn-volver { display: inline-block; margin-top: 30px; padding: 10px 20px; background-color: #b21f1f; color: white; text-decoration: none; border-radius: 5px; }
     </style>
 </head>
 <body>
-    <div class="container">
-        <h1>Área de Docentes</h1>
-        <p>Bienvenido al panel de control para maestros de CECOVAM.</p>
-        <hr>
-        <p>Próximamente: Subida de calificaciones y control de asistencia.</p>
-        <a href="index.html" class="btn-volver">VOLVER AL INICIO</a>
+
+    <div class="header">
+        <h1>Bienvenido al Panel de Control de Maestros</h1>
+        <p>Seleccione la actividad que desea realizar hoy</p>
     </div>
+
+    <div class="container">
+        <div class="card-work" onclick="location.href='asistencias.html'">
+            <h3>Control de Asistencia</h3>
+            <p>Pasar lista diaria a los grupos.</p>
+        </div>
+
+        <div class="card-work" onclick="location.href='gestion_materias.html'">
+            <h3>Gestión de Materias</h3>
+            <p>Publicar nuevas materias y tareas.</p>
+        </div>
+
+        <div class="card-work" onclick="location.href='planeaciones.html'">
+            <h3>Planeaciones</h3>
+            <p>Subir el plan de trabajo semanal.</p>
+        </div>
+    </div>
+
+    <a href="index.html" class="btn-volver">Volver al Inicio</a>
+
 </body>
 </html>
