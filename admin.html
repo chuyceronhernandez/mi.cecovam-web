@@ -3,193 +3,168 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Panel Administrativo - CECOVAM</title>
+    <title>Panel Maestro Administrativo - CECOVAM</title>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
     <style>
         :root { --azul: #1a2a6c; --rojo: #b21f1f; --gris: #f4f7f6; }
-        body { font-family: 'Segoe UI', sans-serif; background: var(--gris); margin: 0; overflow-x: hidden; }
-
-        /* PANTALLA DE BLOQUEO (LOGIN) */
-        #login-screen { 
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%; 
-            background: linear-gradient(135deg, var(--azul) 0%, #000000 100%); 
-            display: flex; justify-content: center; align-items: center; 
-            z-index: 10000; color: white; 
-        }
-        .login-box { 
-            background: white; padding: 40px; border-radius: 20px; 
-            color: #333; text-align: center; width: 320px; 
-            box-shadow: 0 15px 35px rgba(0,0,0,0.5); 
-        }
-        .login-box h2 { color: var(--azul); margin-bottom: 10px; }
-        .login-box input { 
-            width: 100%; padding: 15px; margin: 20px 0; 
-            border: 2px solid #ddd; border-radius: 10px; 
-            text-align: center; font-size: 18px; font-weight: bold;
-            box-sizing: border-box;
-        }
-        .login-box input:focus { border-color: var(--rojo); outline: none; }
-        .btn-login { 
-            background: var(--rojo); color: white; border: none; 
-            padding: 15px; width: 100%; border-radius: 10px; 
-            cursor: pointer; font-weight: bold; font-size: 16px; 
-            transition: 0.3s;
-        }
-        .btn-login:hover { background: #8e1818; transform: translateY(-2px); }
-
-        /* PANEL PRINCIPAL (Oculto inicialmente) */
-        #admin-content { display: none; min-height: 100vh; }
+        body { font-family: 'Segoe UI', sans-serif; background: var(--gris); margin: 0; }
+        
+        /* LOGIN */
+        #login-screen { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: var(--azul); display: flex; justify-content: center; align-items: center; z-index: 10000; }
+        .login-box { background: white; padding: 40px; border-radius: 15px; text-align: center; width: 320px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); }
+        
+        /* ESTRUCTURA */
+        #admin-content { display: none; }
         .sidebar { width: 260px; background: var(--azul); color: white; height: 100vh; position: fixed; padding: 20px; box-sizing: border-box; }
         .main { margin-left: 260px; padding: 40px; width: calc(100% - 260px); box-sizing: border-box; }
         
+        /* ESTILOS */
         .section { display: none; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 5px 15px rgba(0,0,0,0.08); }
         .active { display: block; }
-        
-        .menu-btn { 
-            width: 100%; padding: 15px; margin: 8px 0; border: none; 
-            background: transparent; color: white; text-align: left; 
-            cursor: pointer; border-radius: 8px; font-size: 15px; transition: 0.2s;
-        }
-        .menu-btn:hover { background: rgba(255,255,255,0.1); border-left: 4px solid var(--rojo); padding-left: 20px; }
-        
-        /* Estilos de datos */
-        .card-data { border-left: 5px solid var(--rojo); background: #f9f9f9; padding: 20px; margin-bottom: 15px; border-radius: 8px; }
-        table { width: 100%; border-collapse: collapse; margin-top: 20px; background: white; }
-        th, td { padding: 15px; border: 1px solid #eee; text-align: left; }
+        .menu-btn { width: 100%; padding: 15px; margin: 8px 0; border: none; background: transparent; color: white; text-align: left; cursor: pointer; border-radius: 8px; font-size: 15px; }
+        .menu-btn:hover { background: rgba(255,255,255,0.1); border-left: 4px solid var(--rojo); }
+        .card-data { border-left: 5px solid var(--rojo); background: #f9f9f9; padding: 15px; margin-bottom: 15px; border-radius: 8px; box-shadow: 0 2px 4px rgba(0,0,0,0.05); }
+        input, textarea { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { padding: 12px; border: 1px solid #eee; text-align: left; }
         th { background: var(--azul); color: white; }
+        .btn-descarga { display: inline-block; padding: 8px 15px; background: #27ae60; color: white; text-decoration: none; border-radius: 5px; font-weight: bold; margin-top: 10px; }
     </style>
 </head>
 <body>
 
 <div id="login-screen">
     <div class="login-box">
-        <div style="font-size: 50px; margin-bottom: 10px;">🔐</div>
-        <h2>SISTEMA ADMIN</h2>
-        <p>Introduce el código de acceso institucional:</p>
-        <input type="password" id="codigoInput" placeholder="Código de Acceso">
-        <button class="btn-login" onclick="verificarCodigo()">INGRESAR AL SISTEMA</button>
-        <p style="font-size: 12px; color: #888; margin-top: 15px;">Acceso restringido a personal de CECOVAM</p>
+        <h2 style="color: var(--azul);">Acceso Administrativo</h2>
+        <input type="password" id="codigoInput" placeholder="Código admin 001">
+        <button onclick="verificarCodigo()" style="width:100%; padding:12px; background:var(--rojo); color:white; border:none; border-radius:8px; cursor:pointer; font-weight:bold;">INGRESAR</button>
     </div>
 </div>
 
 <div id="admin-content">
     <div class="sidebar">
-        <h2 style="text-align: center; border-bottom: 1px solid rgba(255,255,255,0.2); padding-bottom: 15px;">CECOVAM</h2>
-        <button class="menu-btn" onclick="showSection('sec-planeaciones')">📑 Ver Planeaciones</button>
-        <button class="menu-btn" onclick="showSection('sec-asistencias')">✅ Ver Asistencias</button>
+        <h2 style="text-align: center;">CECOVAM</h2>
+        <button class="menu-btn" onclick="showSection('sec-planeaciones')">📑 Planeaciones Docentes</button>
+        <button class="menu-btn" onclick="showSection('sec-asistencias')">✅ Lista de Asistencias</button>
+        <button class="menu-btn" onclick="showSection('sec-tareas')">📁 Tareas Recibidas</button>
         <button class="menu-btn" onclick="showSection('sec-pagos')">💰 Control de Pagos</button>
         <button class="menu-btn" onclick="showSection('sec-avisos')">📣 Publicar Avisos</button>
-        <hr style="opacity: 0.2; margin: 20px 0;">
-        <button class="menu-btn" onclick="location.href='index.html'" style="color: #ff9f9f;">🚪 Cerrar Sesión Segura</button>
+        <hr style="opacity:0.2;">
+        <button class="menu-btn" onclick="location.reload()" style="color: #ff9f9f;">🚪 Cerrar Sesión</button>
     </div>
 
     <div class="main">
+        <div id="sec-tareas" class="section">
+            <h1>Tareas y Archivos de Alumnos</h1>
+            <p>Descarga las evidencias enviadas por los estudiantes.</p>
+            <div id="lista-tareas-recibidas">Cargando archivos...</div>
+        </div>
+
         <div id="sec-planeaciones" class="section active">
-            <h1 style="color: var(--azul);">Seguimiento de Planeaciones</h1>
-            <p>Reportes semanales enviados por el cuerpo docente.</p>
-            <div id="lista-planeaciones" style="margin-top:20px;">Cargando...</div>
+            <h1>Planeaciones Semanales</h1>
+            <div id="lista-planeaciones"></div>
         </div>
 
         <div id="sec-asistencias" class="section">
-            <h1 style="color: var(--azul);">Registro de Asistencias</h1>
-            <div id="lista-asistencias">Buscando registros en la nube...</div>
+            <h1>Reportes de Asistencia</h1>
+            <div id="lista-asistencias"></div>
         </div>
 
         <div id="sec-pagos" class="section">
-            <h1 style="color: var(--azul);">Módulo de Pagos</h1>
-            <div style="background: #f0f2f5; padding: 20px; border-radius: 10px; margin-bottom: 20px;">
-                <input type="text" id="pagoAlumno" placeholder="Nombre completo del alumno" style="padding:12px; width:40%; border-radius:5px; border:1px solid #ddd;">
-                <input type="number" id="pagoMonto" placeholder="Monto $" style="padding:12px; width:20%; border-radius:5px; border:1px solid #ddd;">
-                <button onclick="registrarPago()" style="padding:12px 25px; background: #27ae60; color:white; border:none; border-radius:5px; cursor:pointer; font-weight:bold;">REGISTRAR PAGO</button>
+            <h1>Registrar Pago de Alumno</h1>
+            <div style="display:flex; gap:10px;">
+                <input type="text" id="pagoAlumno" placeholder="Nombre del Alumno">
+                <input type="number" id="pagoMonto" placeholder="Monto $">
+                <button onclick="registrarPago()" style="background:#27ae60; color:white; border:none; padding:10px 20px; border-radius:8px; cursor:pointer;">Guardar</button>
             </div>
             <table>
-                <thead><tr><th>Alumno</th><th>Monto</th><th>Fecha de Registro</th></tr></thead>
+                <thead><tr><th>Alumno</th><th>Monto</th><th>Fecha</th></tr></thead>
                 <tbody id="body-pagos"></tbody>
             </table>
         </div>
 
         <div id="sec-avisos" class="section">
-            <h1 style="color: var(--azul);">Avisos Escolares</h1>
-            <textarea id="textoAviso" rows="6" style="width:100%; padding:15px; border-radius:10px; border:1px solid #ddd; font-size:16px;" placeholder="Escribe aquí el aviso informativo para alumnos y padres..."></textarea>
-            <button onclick="publicarAviso()" style="margin-top:15px; padding:15px 30px; background:var(--azul); color:white; border:none; border-radius:10px; cursor:pointer; font-weight:bold;">PUBLICAR AHORA</button>
+            <h1>Publicar Aviso a la Comunidad</h1>
+            <textarea id="textoAviso" rows="5" placeholder="Escribe el mensaje aquí..."></textarea>
+            <button onclick="publicarAviso()" style="background:var(--azul); color:white; border:none; padding:12px 30px; border-radius:8px; cursor:pointer;">Publicar Aviso</button>
         </div>
     </div>
 </div>
 
 <script>
-    // VERIFICACIÓN DE CÓDIGO ACTUALIZADO
-    function verificarCodigo() {
-        const codigo = document.getElementById("codigoInput").value;
-        if(codigo === "admin 001") {
-            document.getElementById("login-screen").style.display = "none";
-            document.getElementById("admin-content").style.display = "flex";
-        } else {
-            alert("Código de acceso incorrecto. Intente de nuevo.");
-            document.getElementById("codigoInput").value = "";
-        }
-    }
-
-    // FIREBASE CONFIG
     const firebaseConfig = {
         apiKey: "AIzaSyDJh57e-sBDK0_8VtFn4EwFOyDDsm8v0lc",
         authDomain: "plataforma-cecovam.firebaseapp.com",
         projectId: "plataforma-cecovam",
-        storageBucket: "plataforma-cecovam.firebasestorage.app",
+        storageBucket: "plataforma-cecovam.appspot.com",
         messagingSenderId: "655865798428",
         appId: "1:655865798428:web:625f020d553385e43d24d9"
     };
     firebase.initializeApp(firebaseConfig);
     const db = firebase.firestore();
 
+    function verificarCodigo() {
+        if(document.getElementById("codigoInput").value === "admin 001") {
+            document.getElementById("login-screen").style.display = "none";
+            document.getElementById("admin-content").style.display = "flex";
+        } else { alert("Código incorrecto"); }
+    }
+
     function showSection(id) {
         document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
         document.getElementById(id).classList.add('active');
     }
 
-    // LECTURA DE DATOS EN TIEMPO REAL
-    db.collection("planeaciones").orderBy("fechaRegistro", "desc").onSnapshot(snap => {
-        const div = document.getElementById("lista-planeaciones");
+    // 1. CARGAR TAREAS DE ALUMNOS (CON LINK DE DESCARGA)
+    db.collection("actividades_alumnos").orderBy("fecha", "desc").onSnapshot(snap => {
+        const div = document.getElementById("lista-tareas-recibidas");
         div.innerHTML = "";
         snap.forEach(doc => {
             const d = doc.data();
-            div.innerHTML += <div class="card-data"><strong>👨‍🏫 Docente:</strong> ${d.docente}<br><strong>📅 Semana:</strong> ${d.semana}<br><hr style="opacity:0.1"><p>${d.contenido}</p></div>;
+            div.innerHTML += `
+                <div class="card-data">
+                    <strong>Alumno:</strong> ${d.alumno} | <strong>Materia:</strong> ${d.materia}<br>
+                    <p style="margin:10px 0;">"${d.comentario}"</p>
+                    <a href="${d.archivoUrl}" target="_blank" class="btn-descarga">📁 Descargar: ${d.nombreArchivo}</a>
+                    <br><small style="color:#888;">Recibido: ${d.fecha}</small>
+                </div>`;
         });
     });
 
-    db.collection("asistencias").orderBy("fecha", "desc").onSnapshot(snap => {
-        const div = document.getElementById("lista-asistencias");
-        div.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            div.innerHTML += <div class="card-data"><strong>📅 Fecha:</strong> ${d.fecha}<br><strong>👥 Presentes:</strong> ${d.alumnos.join(", ")}</div>;
-        });
+    // 2. CARGAR PLANEACIONES
+    db.collection("planeaciones").onSnapshot(snap => {
+        let h = ""; snap.forEach(doc => { h += <div class="card-data"><strong>${doc.data().docente}:</strong> ${doc.data().semana}<p>${doc.data().contenido}</p></div> });
+        document.getElementById("lista-planeaciones").innerHTML = h;
     });
 
+    // 3. CARGAR ASISTENCIAS
+    db.collection("asistencias").onSnapshot(snap => {
+        let h = ""; snap.forEach(doc => { h += <div class="card-data"><strong>${doc.data().fecha}:</strong> ${doc.data().alumnos}</div> });
+        document.getElementById("lista-asistencias").innerHTML = h;
+    });
+
+    // 4. REGISTRAR Y CARGAR PAGOS
     async function registrarPago() {
-        const alumno = document.getElementById("pagoAlumno").value;
-        const monto = document.getElementById("pagoMonto").value;
-        if(!alumno || !monto) return alert("Por favor complete los datos del alumno y el monto.");
-        await db.collection("pagos").add({ alumno, monto, fecha: new Date().toLocaleDateString() });
-        alert("Pago registrado correctamente.");
-        document.getElementById("pagoAlumno").value = "";
-        document.getElementById("pagoMonto").value = "";
+        const a = document.getElementById("pagoAlumno").value;
+        const m = document.getElementById("pagoMonto").value;
+        if(!a || !m) return alert("Completa los campos");
+        await db.collection("pagos").add({ alumno: a, monto: m, fecha: new Date().toLocaleDateString() });
+        alert("Pago guardado");
+        document.getElementById("pagoAlumno").value = ""; document.getElementById("pagoMonto").value = "";
     }
 
     db.collection("pagos").onSnapshot(snap => {
-        const tbody = document.getElementById("body-pagos");
-        tbody.innerHTML = "";
-        snap.forEach(doc => {
-            const d = doc.data();
-            tbody.innerHTML += <tr><td>${d.alumno}</td><td>$${d.monto}</td><td>${d.fecha}</td></tr>;
-        });
+        let h = ""; snap.forEach(doc => { h += <tr><td>${doc.data().alumno}</td><td>$${doc.data().monto}</td><td>${doc.data().fecha}</td></tr> });
+        document.getElementById("body-pagos").innerHTML = h;
     });
 
+    // 5. PUBLICAR AVISO
     async function publicarAviso() {
-        const msj = document.getElementById("textoAviso").value;
-        if(!msj) return alert("El aviso no puede estar vacío.");
-        await db.collection("avisos").add({ mensaje: msj, fecha: new Date().toLocaleString() });
-        alert("¡Aviso publicado con éxito!");
+        const txt = document.getElementById("textoAviso").value;
+        if(!txt) return alert("Escribe un mensaje");
+        await db.collection("avisos").add({ mensaje: txt, fecha: new Date().toLocaleString() });
+        alert("Aviso Publicado con éxito");
         document.getElementById("textoAviso").value = "";
     }
 </script>
