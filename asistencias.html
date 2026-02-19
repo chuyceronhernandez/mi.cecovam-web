@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Control de Asistencia - CECOVAM</title>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+    <style>
+        body { font-family: 'Segoe UI', sans-serif; background: #f4f7f6; padding: 20px; }
+        .card { background: white; padding: 25px; border-radius: 12px; max-width: 600px; margin: auto; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h2 { color: #1a2a6c; text-align: center; border-bottom: 3px solid #b21f1f; padding-bottom: 10px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 20px; }
+        th, td { border: 1px solid #ddd; padding: 12px; text-align: left; }
+        th { background: #1a2a6c; color: white; }
+        .btn-guardar { background: #25d366; color: white; border: none; padding: 15px; border-radius: 8px; cursor: pointer; width: 100%; margin-top: 20px; font-weight: bold; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+<div class="card">
+    <h2>Pase de Lista Diario</h2>
+    <p><strong>Fecha:</strong> <span id="fechaActual"></span></p>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Nombre del Alumno</th>
+                <th>Asistencia</th>
+            </tr>
+        </thead>
+        <tbody id="tablaAlumnos">
+            <tr>
+                <td>Alumno Ejemplo 1</td>
+                <td><input type="checkbox" class="asistencia-check" data-nombre="Alumno Ejemplo 1"></td>
+            </tr>
+            <tr>
+                <td>Alumno Ejemplo 2</td>
+                <td><input type="checkbox" class="asistencia-check" data-nombre="Alumno Ejemplo 2"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <button class="btn-guardar" onclick="enviarAsistencia()">ENVIAR A FIREBASE</button>
+    <p style="text-align: center;"><a href="docentes.html" style="color: #b21f1f; text-decoration: none;">← Volver al Panel</a></p>
+</div>
+
+<script>
+    // Tu configuración real
+    const firebaseConfig = {
+        apiKey: "AIzaSyDJh57e-sBDK0_8VtFn4EwFOyDDsm8v0lc",
+        authDomain: "plataforma-cecovam.firebaseapp.com",
+        projectId: "plataforma-cecovam",
+        storageBucket: "plataforma-cecovam.firebasestorage.app",
+        messagingSenderId: "655865798428",
+        appId: "1:655865798428:web:625f020d553385e43d24d9",
+        measurementId: "G-H8HXLDQK8J"
+    };
+
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.firestore();
+
+    document.getElementById('fechaActual').innerText = new Date().toLocaleDateString();
+
+    async function enviarAsistencia() {
+        const checks = document.querySelectorAll('.asistencia-check');
+        let datosAsistencia = {
+            fecha: new Date().toISOString().split('T')[0],
+            alumnos: []
+        };
+
+        checks.forEach(check => {
+            datosAsistencia.alumnos.push({
+                nombre: check.getAttribute('data-nombre'),
+                presente: check.checked
+            });
+        });
+
+        try {
+            await db.collection("asistencias").add(datosAsistencia);
+            alert("¡Éxito! Datos guardados en Firebase.");
+        } catch (error) {
+            alert("Error: Asegúrate de tener las reglas de Firebase en 'públicas'.");
+        }
+    }
+</script>
+</body>
+</html>
